@@ -1,31 +1,1329 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Shorinryu Tamilnadu";
+    Layout = null;
 }
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
+<head>
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Shorinryu Tamilnadu</title>
+
+    <!-- CSS Files - Predefined css files -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.7/angular-material.css">
+    <link rel="stylesheet" type="text/css" href="https://material.angularjs.org/1.1.7/docs.css">
+    <!-- CSS Files - Custom css files -->
+    <link rel="stylesheet" type="text/css" href="./Content/css/agencyCopy.css">
+    <link rel="stylesheet" type="text/css" href="./Content/css/AngGridPicture.css">
+    <style type="text/css">
+
+        .md-dialog-content {
+            width: 500px !important;
+            height: 300px !important;
+        }
+
+        .dialogdemoBasicUsage #popupContainer {
+            position: relative;
+        }
+
+        .dialogdemoBasicUsage .footer {
+            width: 100%;
+            text-align: center;
+            margin-left: 20px;
+        }
+
+            .dialogdemoBasicUsage .footer, .dialogdemoBasicUsage .footer > code {
+                font-size: 0.8em;
+                margin-top: 50px;
+            }
+
+        .dialogdemoBasicUsage button {
+            width: 200px;
+        }
+
+        .dialogdemoBasicUsage div#status {
+            color: #c60008;
+        }
+
+        .dialogdemoBasicUsage .dialog-demo-prerendered md-checkbox {
+            margin-bottom: 0;
+        }
+
+
+        /*
+        Copyright 2016 Google Inc. All Rights Reserved.
+        Use of this source code is governed by an MIT-style license that can be foundin the LICENSE file at http://material.angularjs.org/HEAD/license.
+        */
+    </style>
+
+
+    <!-- Javascript Files - Predefined script files -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.js"></script>
+    <script type="text/javascript" src="./Scripts/js/jquery.min.js"></script>
+    <script type="text/javascript" src="./Scripts/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-animate.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-aria.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-messages.min.js"></script>
+    <script type="text/javascript" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-114/svg-assets-cache.js"></script>
+    <script type="text/javascript" src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.7/angular-material.js"></script>
+    <!-- Javascript Files - Custom script files -->
+    <script type="text/javascript">
+        var app = angular.module('MyApp', ['ngMaterial', 'ngMessages', 'material.svgAssetsCache']);
+        app.service('filteredListService', function () {
+
+            this.searched = function (valLists, toSearch) {
+                return _.filter(valLists,
+
+                    function (i) {
+                        /* Search Text in all 3 fields */
+                        return searchUtil(i, toSearch);
+                    });
+            };
+
+            this.paged = function (valLists, rowsPerPage, itemsPerRow) {
+                retVal = [];
+                valLists = listToMatrix(valLists, itemsPerRow);
+                //valLists[0].IsFirstItemOfRow = true;
+                for (var i = 0; i < valLists.length; i++) {
+                    if (i % rowsPerPage === 0) {
+                        retVal[Math.floor(i / rowsPerPage)] = [valLists[i]];
+                    } else {
+                        retVal[Math.floor(i / rowsPerPage)].push(valLists[i]);
+                    }
+
+                }
+                return retVal;
+            };
+
+        });
+        app.controller('AppCtrl', function ($scope, $mdDialog, $filter, filteredListService) {
+            $scope.status = '  ';
+            $scope.customFullscreen = false;
+            $scope.allItems = getDummyData();
+            $scope.searchText = '';
+            $scope.rowsPerPage = 4;
+            $scope.itemsPerRow = 4;
+            $scope.reverse = false;
+            $scope.searchText = '';
+            $scope.currentPage = 0;
+            $scope.filteredList = filteredListService.searched($scope.allItems, $scope.searchText);
+
+
+            $scope.search = function () {
+                $scope.filteredList = filteredListService.searched($scope.allItems, $scope.searchText);
+
+                if ($scope.searchText == '') {
+                    $scope.filteredList = $scope.allItems;
+                }
+                $scope.pagination();
+            }
+            $scope.pagination = function () {
+                $scope.ItemsByPage = filteredListService.paged($scope.filteredList, $scope.rowsPerPage, $scope.itemsPerRow);
+            };
+
+            $scope.showAdvanced = function (ev) {
+                $mdDialog.show({
+                    controller: DialogController,
+                    templateUrl: 'dialog1.tmpl.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose: true,
+                    fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+                })
+
+            };
+
+            $scope.pagination();
+
+            function DialogController($scope, $mdDialog, filteredListService) {
+
+                $scope.rowsPerPage = 1;
+                $scope.itemsPerRow = 1;
+                $scope.allItems = getDummyData();
+                $scope.filteredList = $scope.allItems;
+                $scope.currentPage = 0;
+
+                $scope.setPage = function () {
+                    $scope.currentPage = this.n;
+                };
+
+                $scope.firstPage = function () {
+                    $scope.currentPage = 0;
+                };
+
+                $scope.lastPage = function () {
+                    $scope.currentPage = $scope.ItemsByPage.length - 1;
+                };
+
+                $scope.previousPage = function () {
+                    $scope.currentPage = $scope.currentPage - 1;
+                };
+                $scope.nextPage = function () {
+                    $scope.currentPage = $scope.currentPage + 1;
+                };
+
+
+                $scope.hide = function () {
+                    $mdDialog.hide();
+                };
+
+                $scope.cancel = function () {
+                    $mdDialog.cancel();
+                };
+
+                $scope.answer = function (answer) {
+                    $mdDialog.hide(answer);
+                };
+
+                $scope.pagination = function () {
+                    $scope.ItemsByPage = filteredListService.paged($scope.filteredList, $scope.rowsPerPage, $scope.itemsPerRow);
+                };
+
+                $scope.pagination();
+            }
+
+
+
+
+        });
+
+
+        /**
+        Copyright 2016 Google Inc. All Rights Reserved.
+        Use of this source code is governed by an MIT-style license that can be foundin the LICENSE file at http://material.angularjs.org/HEAD/license.
+        **/
+
+        function getDummyData() {
+            return [
+
+                //01
+                {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31693269_153674972138935_5758337111300243456_n.jpg?_nc_cat=0&oh=fb5b4b76058a00952d7bb3e7625c8d21&oe=5B9173FC'
+                    , ProductSize: '1'
+                    , ProductPrice: '1001'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31506832_153679245471841_4351554928938844160_n.jpg?_nc_cat=0&oh=e49a5bba35a6e875114a49802b16684f&oe=5B62F154'
+                    , ProductName: 'Name 102'
+                    , ProductSize: '2'
+                    , ProductPrice: '1002'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31689308_153675062138926_6771953619404062720_n.jpg?_nc_cat=0&oh=c9bae5110d74e7978c4b130b06afc6c4&oe=5B8F9789'
+                    , ProductName: 'Name 103'
+                    , ProductSize: '3'
+                    , ProductPrice: '1003'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31676788_153676795472086_5435893523884802048_n.jpg?_nc_cat=0&oh=ba47296c2b4e7797caf42394d87ed781&oe=5B503C26'
+                    , ProductName: 'Name 104'
+                    , ProductSize: '4'
+                    , ProductPrice: '1004'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31659554_153673892139043_5551612844920799232_n.jpg?_nc_cat=0&oh=44c01f7dc9a8f22034874fbbcb6dc789&oe=5B91671C'
+                    , ProductName: 'Name 105'
+                    , ProductSize: '5'
+                    , ProductPrice: '1005'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31530598_153674735472292_5874183013612388352_n.jpg?_nc_cat=0&oh=b0d7ff776ef07414057708f69425e824&oe=5B574FE1',
+                    ProductName: 'Name 106',
+                    ProductSize: '6',
+                    ProductPrice: '1006'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31531553_153679162138516_1553518391409508352_n.jpg?_nc_cat=0&oh=b71c766e1226afc2dc61a4844fd404c5&oe=5B62FE99',
+                    ProductName: 'Name 107',
+                    ProductSize: '7',
+                    ProductPrice: '1007'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31706514_153678652138567_9171065124805410816_n.jpg?_nc_cat=0&oh=567a7ed694aa8cbd17cc6cb9088c20c6&oe=5B93D88F',
+                    ProductName: 'Name 108',
+                    ProductSize: '8',
+                    ProductPrice: '1008'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31543835_153677702138662_8426293082437189632_n.jpg?_nc_cat=0&oh=e42933cf2ab33cbf520b736e7758d298&oe=5B5E8FE7',
+                    ProductName: 'Name 109',
+                    ProductSize: '9',
+                    ProductPrice: '1009'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31543029_153678875471878_4190143383575986176_n.jpg?_nc_cat=0&oh=5027064e6da8372fe291fa49f85ce60c&oe=5B9D132C',
+                    ProductName: 'Name 110',
+                    ProductSize: '10',
+                    ProductPrice: '1010'
+                    , IsFirstItemOfRow: false
+                },
+                //11
+                {
+                    ProductPictureUrl: 'https://scontent.fmaa2-1.fna.fbcdn.net/v/t1.0-9/31688829_153676982138734_1278699080704327680_n.jpg?_nc_cat=0&oh=4f23c23097fe4454e6bacd3ca0796e68&oe=5B90F426',
+                    ProductName: 'Name 111',
+                    ProductSize: '11',
+                    ProductPrice: '1011'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-1.fna.fbcdn.net/v/t1.0-9/31506663_153677802138652_4415111073301004288_n.jpg?_nc_cat=0&oh=9ac686af181ad43c780df478f5c75578&oe=5B639C4E',
+                    ProductName: 'Name 112',
+                    ProductSize: '12',
+                    ProductPrice: '1012'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-1.fna.fbcdn.net/v/t1.0-9/31582287_153678358805263_6856363642464501760_n.jpg?_nc_cat=0&oh=f7942b66f15b10b7790db8ed1e9dc0e5&oe=5B517C22',
+                    ProductName: 'Name 113',
+                    ProductSize: '13',
+                    ProductPrice: '1013'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-1.fna.fbcdn.net/v/t1.0-9/31670068_153677962138636_1296893704631484416_n.jpg?_nc_cat=0&oh=f7d604721c1712ab7c99ac453eb9e5ee&oe=5B8E8494',
+                    ProductName: 'Name 114',
+                    ProductSize: '14',
+                    ProductPrice: '1014'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-1.fna.fbcdn.net/v/t1.0-9/31531543_153677762138656_2897201577137799168_n.jpg?_nc_cat=0&oh=9c5e27774b712f34db0833802e5dc4f9&oe=5B997CB9',
+                    ProductName: 'Name 115',
+                    ProductSize: '15',
+                    ProductPrice: '1015'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31507264_153677942138638_9115040149762211840_n.jpg?_nc_cat=0&oh=471d42bd4dbb2f3d073f1688a1914621&oe=5B9CE0C4',
+                    ProductName: 'Test 116',
+                    ProductSize: '16',
+                    ProductPrice: '1016'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31531061_153677992138633_5693033645393051648_n.jpg?_nc_cat=0&oh=629a95a43d39e84a2b9221e718dbe5a2&oe=5B60696A',
+                    ProductName: 'Test 117',
+                    ProductSize: '17',
+                    ProductPrice: '1017'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31672367_153678182138614_3312112189778690048_n.jpg?_nc_cat=0&oh=734b235be2d65b11fa7a21f29b13fb35&oe=5B8EBB34',
+                    ProductName: 'Test 118',
+                    ProductSize: '18',
+                    ProductPrice: '1018'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31578111_153678485471917_8103829566373494784_n.jpg?_nc_cat=0&oh=7012366cd29935ff9ad20ca4e9bdcec7&oe=5B5F0FEE',
+                    ProductName: 'Test 119',
+                    ProductSize: '19',
+                    ProductPrice: '1019'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31646739_153678208805278_1045724751600812032_n.jpg?_nc_cat=0&oh=28d258cbe9fc4676eeb5030caade186e&oe=5B54862D',
+                    ProductName: 'Test 120',
+                    ProductSize: '20',
+                    ProductPrice: '1020'
+                    , IsFirstItemOfRow: false
+                }
+                //21
+                , {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31755348_153677278805371_7879661496479776768_n.jpg?_nc_cat=0&oh=6aa6d72fcb5917fc0f7f6364df8a4ba5&oe=5B62C421',
+                    ProductName: 'Name 111',
+                    ProductSize: '11',
+                    ProductPrice: '1011'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31531192_153678522138580_4240797776893444096_n.jpg?_nc_cat=0&oh=2a4414a1d2272548ab688dd6406addd4&oe=5B55C11F',
+                    ProductName: 'Name 112',
+                    ProductSize: '12',
+                    ProductPrice: '1012'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31514070_153677848805314_7923260242077417472_n.jpg?_nc_cat=0&oh=986391ba281cfc1aa7299a39e3f13adc&oe=5B59296B',
+                    ProductName: 'Name 113',
+                    ProductSize: '13',
+                    ProductPrice: '1013'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31564138_153679728805126_3837103711864225792_n.jpg?_nc_cat=0&oh=2f583f5d8584751fdd797ec9e22fe66c&oe=5B9340E1',
+                    ProductName: 'Name 114',
+                    ProductSize: '14',
+                    ProductPrice: '1014'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31674349_153677815471984_2230964927332352000_n.jpg?_nc_cat=0&oh=d699012593ee32baacf8cc53af734139&oe=5B8EE949',
+                    ProductName: 'Name 115',
+                    ProductSize: '15',
+                    ProductPrice: '1015'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31648136_153673422139090_7225026008607358976_n.jpg?_nc_cat=0&oh=ea18245838c1f5dc764aa118ada1a54c&oe=5B9B5756',
+                    ProductName: 'Test 116',
+                    ProductSize: '16',
+                    ProductPrice: '1016'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31531682_153674075472358_5208012978749702144_n.jpg?_nc_cat=0&oh=79a245f2b6c96c05c68fe1559ab7f7b7&oe=5B501A39',
+                    ProductName: 'Test 117',
+                    ProductSize: '17',
+                    ProductPrice: '1017'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31671237_153674092139023_4886767038669783040_n.jpg?_nc_cat=0&oh=b9c91c848cb5ecd97c77b366f7ce4637&oe=5B4F86C9',
+                    ProductName: 'Test 118',
+                    ProductSize: '18',
+                    ProductPrice: '1018'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31587894_153674815472284_6214561598476910592_n.jpg?_nc_cat=0&oh=5e385bd9d320a8cf3eb95c182ff0cf97&oe=5B8DF3EF',
+                    ProductName: 'Test 119',
+                    ProductSize: '19',
+                    ProductPrice: '1019'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31673629_153674952138937_4660727230618402816_n.jpg?_nc_cat=0&oh=e454d5bfc8d696f39e8056961a982880&oe=5B619E23',
+                    ProductName: 'Test 120',
+                    ProductSize: '20',
+                    ProductPrice: '1020'
+                    , IsFirstItemOfRow: false
+                }
+
+                //31
+                , {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31676711_153679562138476_7616249180826107904_n.jpg?_nc_cat=0&oh=86517a4095826509fd22b9329a94921f&oe=5B5A3C22',
+                    ProductName: 'Name 111',
+                    ProductSize: '11',
+                    ProductPrice: '1011'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31562122_153680188805080_5159228631372791808_n.jpg?_nc_cat=0&oh=1b039af3d816a83f6671a9eba6a41c69&oe=5B5F03EF',
+                    ProductName: 'Name 112',
+                    ProductSize: '12',
+                    ProductPrice: '1012'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31509870_153679495471816_8448878275337388032_n.jpg?_nc_cat=0&oh=e1c8e2af4057f6e745026dfbab78d5b2&oe=5B53C74D',
+                    ProductName: 'Name 113',
+                    ProductSize: '13',
+                    ProductPrice: '1013'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31712123_153679792138453_2661355529820962816_n.jpg?_nc_cat=0&oh=f5d596c2a5819309b277b6063bcc666f&oe=5B930DFF',
+                    ProductName: 'Name 114',
+                    ProductSize: '14',
+                    ProductPrice: '1014'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31582286_153680535471712_132651512340938752_n.jpg?_nc_cat=0&oh=44ae9dc0034ed2f733cb9fe7b5c7f455&oe=5B91A44B',
+                    ProductName: 'Name 115',
+                    ProductSize: '15',
+                    ProductPrice: '1015'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31531578_153673548805744_1080821184234258432_n.jpg?_nc_cat=0&oh=3bef1d6e3b401d166e56bd030e7dfba3&oe=5B61BAE7',
+                    ProductName: 'Test 116',
+                    ProductSize: '16',
+                    ProductPrice: '1016'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31564222_153679878805111_5954865984312442880_n.jpg?_nc_cat=0&oh=7b15232f5c4f1acd8e3799ba788d5302&oe=5B632382',
+                    ProductName: 'Test 117',
+                    ProductSize: '17',
+                    ProductPrice: '1017'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31687362_153680945471671_4162528496209362944_n.jpg?_nc_cat=0&oh=4374a525c53d6245b59d7f57cc0335df&oe=5B947E49',
+                    ProductName: 'Test 118',
+                    ProductSize: '18',
+                    ProductPrice: '1018'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31509774_153681072138325_8976059547844083712_n.jpg?_nc_cat=0&oh=0eb1fe420b5b9854404e56ee2d3c56bd&oe=5B54946E',
+                    ProductName: 'Test 119',
+                    ProductSize: '19',
+                    ProductPrice: '1019'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31543520_153680928805006_3548534449907957760_n.jpg?_nc_cat=0&oh=fa51cfa3e3af4db4860251d54a78e950&oe=5B52B97D',
+                    ProductName: 'Test 120',
+                    ProductSize: '20',
+                    ProductPrice: '1020'
+                    , IsFirstItemOfRow: false
+                }
+
+                //41
+                , {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31487889_153679382138494_1897019885649657856_n.jpg?_nc_cat=0&oh=6685073ab3e54932c0c8cf1e9f69d767&oe=5B920D20',
+                    ProductName: 'Name 111',
+                    ProductSize: '11',
+                    ProductPrice: '1011'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31506456_153679892138443_3524083278401241088_n.jpg?_nc_cat=0&oh=294765debc29694f9244398a71e8e013&oe=5B556B74',
+                    ProductName: 'Name 112',
+                    ProductSize: '12',
+                    ProductPrice: '1012'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31577942_153680088805090_8621278846714380288_n.jpg?_nc_cat=0&oh=ed5d7000fd5753d681565cb43343331c&oe=5B4F1DBB',
+                    ProductName: 'Name 113',
+                    ProductSize: '13',
+                    ProductPrice: '1013'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31543658_153680198805079_8820125812360478720_n.jpg?_nc_cat=0&oh=18821aede8ed5bd6f32009a50b875500&oe=5B50CD4A',
+                    ProductName: 'Name 114',
+                    ProductSize: '14',
+                    ProductPrice: '1014'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31517643_153678442138588_8338499462666125312_n.jpg?_nc_cat=0&oh=354b12317e8742926b54fdfdebaefe90&oe=5B5E89A6',
+                    ProductName: 'Name 115',
+                    ProductSize: '15',
+                    ProductPrice: '1015'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31512671_153674825472283_8752594143189925888_n.jpg?_nc_cat=0&oh=290f21c9aa07a812c6063d7430051288&oe=5B995466',
+                    ProductName: 'Test 116',
+                    ProductSize: '16',
+                    ProductPrice: '1016'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31507602_153677298805369_605642263351001088_n.jpg?_nc_cat=0&oh=1606ac73b95e7db00fa1c8a950b27e94&oe=5B5C5BA4',
+                    ProductName: 'Test 117',
+                    ProductSize: '17',
+                    ProductPrice: '1017'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31576182_153677345472031_3074639208850128896_n.jpg?_nc_cat=0&oh=59649097825fa34fa05a61694f3f8143&oe=5B515A6A',
+                    ProductName: 'Test 118',
+                    ProductSize: '18',
+                    ProductPrice: '1018'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31530860_153678232138609_3748715960677171200_n.jpg?_nc_cat=0&oh=3cbe15711a4ecf03239823302c6e1c29&oe=5B571430',
+                    ProductName: 'Test 119',
+                    ProductSize: '19',
+                    ProductPrice: '1019'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31531215_153673905472375_4803681549163692032_n.jpg?_nc_cat=0&oh=5f496adea8ac46954466e194e498e0be&oe=5B986343',
+                    ProductName: 'Test 120',
+                    ProductSize: '20',
+                    ProductPrice: '1020'
+                    , IsFirstItemOfRow: false
+                }
+
+                //51
+                , {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31487889_153679382138494_1897019885649657856_n.jpg?_nc_cat=0&oh=6685073ab3e54932c0c8cf1e9f69d767&oe=5B920D20',
+                    ProductName: 'Name 111',
+                    ProductSize: '11',
+                    ProductPrice: '1011'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31506456_153679892138443_3524083278401241088_n.jpg?_nc_cat=0&oh=294765debc29694f9244398a71e8e013&oe=5B556B74',
+                    ProductName: 'Name 112',
+                    ProductSize: '12',
+                    ProductPrice: '1012'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31577942_153680088805090_8621278846714380288_n.jpg?_nc_cat=0&oh=ed5d7000fd5753d681565cb43343331c&oe=5B4F1DBB',
+                    ProductName: 'Name 113',
+                    ProductSize: '13',
+                    ProductPrice: '1013'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31543658_153680198805079_8820125812360478720_n.jpg?_nc_cat=0&oh=18821aede8ed5bd6f32009a50b875500&oe=5B50CD4A',
+                    ProductName: 'Name 114',
+                    ProductSize: '14',
+                    ProductPrice: '1014'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31517643_153678442138588_8338499462666125312_n.jpg?_nc_cat=0&oh=354b12317e8742926b54fdfdebaefe90&oe=5B5E89A6',
+                    ProductName: 'Name 115',
+                    ProductSize: '15',
+                    ProductPrice: '1015'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31512671_153674825472283_8752594143189925888_n.jpg?_nc_cat=0&oh=290f21c9aa07a812c6063d7430051288&oe=5B995466',
+                    ProductName: 'Test 116',
+                    ProductSize: '16',
+                    ProductPrice: '1016'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31507602_153677298805369_605642263351001088_n.jpg?_nc_cat=0&oh=1606ac73b95e7db00fa1c8a950b27e94&oe=5B5C5BA4',
+                    ProductName: 'Test 117',
+                    ProductSize: '17',
+                    ProductPrice: '1017'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31576182_153677345472031_3074639208850128896_n.jpg?_nc_cat=0&oh=59649097825fa34fa05a61694f3f8143&oe=5B515A6A',
+                    ProductName: 'Test 118',
+                    ProductSize: '18',
+                    ProductPrice: '1018'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31530860_153678232138609_3748715960677171200_n.jpg?_nc_cat=0&oh=3cbe15711a4ecf03239823302c6e1c29&oe=5B571430',
+                    ProductName: 'Test 119',
+                    ProductSize: '19',
+                    ProductPrice: '1019'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31531215_153673905472375_4803681549163692032_n.jpg?_nc_cat=0&oh=5f496adea8ac46954466e194e498e0be&oe=5B986343',
+                    ProductName: 'Test 120',
+                    ProductSize: '20',
+                    ProductPrice: '1020'
+                    , IsFirstItemOfRow: false
+                }
+
+
+                //61
+                , {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31543924_153675078805591_708094533488869376_n.jpg?_nc_cat=0&oh=fd5d87e5ace62c977be3aed73e772b69&oe=5B600726',
+                    ProductName: 'Name 111',
+                    ProductSize: '11',
+                    ProductPrice: '1011'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31562218_153677438805355_8922515135457656832_n.jpg?_nc_cat=0&oh=56339a86b7ea3464e5694356246d54f4&oe=5B4EAB55',
+                    ProductName: 'Name 112',
+                    ProductSize: '12',
+                    ProductPrice: '1012'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31563954_153677525472013_9219357157261049856_n.jpg?_nc_cat=0&oh=172e519fb3e0538c780abe712e99ab2e&oe=5B52FD51',
+                    ProductName: 'Name 113',
+                    ProductSize: '13',
+                    ProductPrice: '1013'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31531860_153678398805259_5358511016508391424_n.jpg?_nc_cat=0&oh=9904db57e1e799f0f8fccf206fbf9f40&oe=5B9660D4',
+                    ProductName: 'Name 114',
+                    ProductSize: '14',
+                    ProductPrice: '1014'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31655679_153673742139058_6637139848727625728_n.jpg?_nc_cat=0&oh=b156ab94dbe080d1452eaa988b99b7bc&oe=5B555D44',
+                    ProductName: 'Name 115',
+                    ProductSize: '15',
+                    ProductPrice: '1015'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31530392_153677155472050_7044922254471200768_n.jpg?_nc_cat=0&oh=e6c95583078f722099413ad8178cf409&oe=5B9D2C28',
+                    ProductName: 'Test 116',
+                    ProductSize: '16',
+                    ProductPrice: '1016'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31729790_153673538805745_7620963530203725824_n.jpg?_nc_cat=0&oh=ab259eb17afd61861e28b65525cc4918&oe=5B9428B8',
+                    ProductName: 'Test 117',
+                    ProductSize: '17',
+                    ProductPrice: '1017'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31531851_153673392139093_3438836733150494720_n.jpg?_nc_cat=0&oh=595f36677736913dc04e002f5e156591&oe=5B5EE8E2',
+                    ProductName: 'Test 118',
+                    ProductSize: '18',
+                    ProductPrice: '1018'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31562351_153673408805758_5188325621758951424_n.jpg?_nc_cat=0&oh=2f17fd71896d09e367fb3bcc66a48fe6&oe=5B517B08',
+                    ProductName: 'Test 119',
+                    ProductSize: '19',
+                    ProductPrice: '1019'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31662218_153677515472014_6826967593505521664_n.jpg?_nc_cat=0&oh=c2aea92a61e09d48bfc65e4994206693&oe=5B54C971',
+                    ProductName: 'Test 120',
+                    ProductSize: '20',
+                    ProductPrice: '1020'
+                    , IsFirstItemOfRow: false
+                }
+
+                //71
+                , {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31731989_153673925472373_9048387978224730112_n.jpg?_nc_cat=0&oh=47f56c4a7922a7be38d2898a077535f6&oe=5B551D33',
+                    ProductName: 'Name 111',
+                    ProductSize: '11',
+                    ProductPrice: '1011'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31564137_153673768805722_5515820644765270016_n.jpg?_nc_cat=0&oh=eba8f37779e3f3402546cd04f0c21868&oe=5B5A57D5',
+                    ProductName: 'Name 112',
+                    ProductSize: '12',
+                    ProductPrice: '1012'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31676641_153674452138987_3725201959624376320_n.jpg?_nc_cat=0&oh=2722a89b6417547383a5795a8eb8d0b4&oe=5B5E7AC6',
+                    ProductName: 'Name 113',
+                    ProductSize: '13',
+                    ProductPrice: '1013'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31530745_153673648805734_2659941184205488128_n.jpg?_nc_cat=0&oh=a2f523c8e4448ea52610ed440e7da4e0&oe=5B616DC3',
+                    ProductName: 'Name 114',
+                    ProductSize: '14',
+                    ProductPrice: '1014'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31693163_153675105472255_1220779002881376256_n.jpg?_nc_cat=0&oh=bc97f0d6c527725065ce1714034c39d2&oe=5B5273FE',
+                    ProductName: 'Name 115',
+                    ProductSize: '15',
+                    ProductPrice: '1015'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31525150_153674468805652_6844608127996788736_n.jpg?_nc_cat=0&oh=8314130124f34b5c6bcc32282f4c77ac&oe=5B5DF296',
+                    ProductName: 'Test 116',
+                    ProductSize: '16',
+                    ProductPrice: '1016'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31543866_153674568805642_683941454187331584_n.jpg?_nc_cat=0&oh=feadde60ed335d1cb5ac286448f59f96&oe=5B5A6DDB',
+                    ProductName: 'Test 117',
+                    ProductSize: '17',
+                    ProductPrice: '1017'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31563963_153674055472360_5887124956961046528_n.jpg?_nc_cat=0&oh=74b86b51d0e0a12708561ef598e86bdc&oe=5B584F88',
+                    ProductName: 'Test 118',
+                    ProductSize: '18',
+                    ProductPrice: '1018'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31542990_153674578805641_1788562838915121152_n.jpg?_nc_cat=0&oh=ce7c80049302bb203af0cd7117893e18&oe=5B5B2B25',
+                    ProductName: 'Test 119',
+                    ProductSize: '19',
+                    ProductPrice: '1019'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31682576_153674708805628_2436732953603080192_n.jpg?_nc_cat=0&oh=fcc3196fe41457918742cb24f4818f10&oe=5B5D9280',
+                    ProductName: 'Test 120',
+                    ProductSize: '20',
+                    ProductPrice: '1020'
+                    , IsFirstItemOfRow: false
+                }
+
+
+                //81
+                , {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31562852_153674598805639_348256005856952320_n.jpg?_nc_cat=0&oh=f0af6c14db1943a629353df4ede12613&oe=5B6037CA',
+                    ProductName: 'Name 111',
+                    ProductSize: '11',
+                    ProductPrice: '1011'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31603738_153677672138665_3760293319901446144_n.jpg?_nc_cat=0&oh=dc91abe14e2d82f7ab2da4162b12f522&oe=5B5C2E71',
+                    ProductName: 'Name 112',
+                    ProductSize: '12',
+                    ProductPrice: '1012'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31518689_153677635472002_8253226125409386496_n.jpg?_nc_cat=0&oh=a4801f463ffff25ab0c93bbd5e5c5976&oe=5B57D268',
+                    ProductName: 'Name 113',
+                    ProductSize: '13',
+                    ProductPrice: '1013'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31658008_153674848805614_83684693278457856_n.jpg?_nc_cat=0&oh=f4e1508b5611d16302f31ee286501045&oe=5B528590',
+                    ProductName: 'Name 114',
+                    ProductSize: '14',
+                    ProductPrice: '1014'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31516752_153675195472246_5334061249455980544_n.jpg?_nc_cat=0&oh=414112f8b60af22d650f77f94f8fc5b0&oe=5B4F3B15',
+                    ProductName: 'Name 115',
+                    ProductSize: '15',
+                    ProductPrice: '1015'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31706588_153678292138603_6097566869722497024_n.jpg?_nc_cat=0&oh=e2c8ed434b88695e0b061b4ae3c75ff0&oe=5B56D873',
+                    ProductName: 'Test 116',
+                    ProductSize: '16',
+                    ProductPrice: '1016'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31662167_153674695472296_4202205958140592128_n.jpg?_nc_cat=0&oh=6fd3e60eb6b00e9761e84ea4499c1354&oe=5B98937C',
+                    ProductName: 'Test 117',
+                    ProductSize: '17',
+                    ProductPrice: '1017'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31577786_153675208805578_4479895818827988992_n.jpg?_nc_cat=0&oh=fcc492ba9d2cdf16384efc080a04deac&oe=5B9BEE78',
+                    ProductName: 'Test 118',
+                    ProductSize: '18',
+                    ProductPrice: '1018'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31543305_153675235472242_2592935141722554368_n.jpg?_nc_cat=0&oh=8cb70c771727f4c0be74d7647df15686&oe=5B51B952',
+                    ProductName: 'Test 119',
+                    ProductSize: '19',
+                    ProductPrice: '1019'
+                    , IsFirstItemOfRow: false
+                }, {
+                    ProductPictureUrl: 'https://scontent.fmaa2-2.fna.fbcdn.net/v/t1.0-9/31543305_153675235472242_2592935141722554368_n.jpg?_nc_cat=0&oh=8cb70c771727f4c0be74d7647df15686&oe=5B51B952',
+                    ProductName: 'Test 120',
+                    ProductSize: '20',
+                    ProductPrice: '1020'
+                    , IsFirstItemOfRow: false
+                }
+            ];
+        }
+
+        function searchUtil(item, toSearch) {
+            /* Search Text in all 3 fields */
+            //return (item.name.toLowerCase().indexOf(toSearch.toLowerCase()) > -1 || item.Email.toLowerCase().indexOf(toSearch.toLowerCase()) > -1 || item.EmpId == toSearch) ? true : false;
+            return true;
+        }
+
+        function listToMatrix(list, elementsPerSubArray) {
+            var matrix = [], i, k;
+
+            for (i = 0, k = -1; i < list.length; i++) {
+                if (i % elementsPerSubArray === 0) {
+                    k++;
+                    matrix[k] = [];
+                }
+
+                matrix[k].push(list[i]);
+            }
+
+            return matrix;
+        }
+
+    </script>
+
+</head>
+
+<body id="page-top" class="index">
+    <div ng-controller="AppCtrl" id="popupContainer" ng-app="MyApp">
+        <!-- Navigation -->
+        <nav id="mainNav" class="navbar navbar-default navbar-custom navbar-fixed-top" style="background-color:aqua">
+            <div class="container">
+                <div class="navbar-header page-scroll">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+                    </button>
+                    <a class="navbar-brand page-scroll" href="#page-top">Sensei G.Senthil</a><br />
+                    <label>4th Dan Black Belt</label>
+                </div>
+
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="hidden">
+                            <a href="#page-top"></a>
+                        </li>
+                        <li>
+                            <a class="page-scroll" href="#home"><h4>Home</h4></a>
+                        </li>
+                        <li>
+                            <a class="page-scroll" href="#about"><h4>About</h4></a>
+                        </li>
+                        <li>
+                            <a class="page-scroll " href="#services"><h4>Services</h4></a>
+                        </li>
+                        <li>
+                            <a class="page-scroll" href="#Photos"><h4>Photos</h4></a>
+                        </li>
+                        <li>
+                            <a class="page-scroll" href="#videos"><h4>Videos</h4></a>
+                        </li>
+
+                        <li>
+                            <a class="page-scroll" href="#contact"><h4>Contact</h4></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Header -->
+        <header>
+            <section id="home">
+                <div class="container">
+                    <div class="intro-text">
+                        <div class="intro-lead-in" style="color:blueviolet">Welcome To </div>
+                        <div class="intro-heading">shorinryu-tamilnadu</div>
+                    </div>
+                </div>
+            </section>
+        </header>
+
+        <section id="about" style="background-color:palevioletred">
+            <div class="container">
+                <div class="row">
+                    <div class="box">
+                        <div class="col-lg-12">
+                            <hr>
+                            <h2 class="intro-text text-center">
+                                About
+                                <strong>Our History</strong>
+                            </h2>
+                            <hr>
+                        </div>
+                        <div class="col-md-3">
+                            <img style="width:250px;height:300px;" src="./Content/images/about/nagamine.jpg" />
+                        </div>
+                        <div class="col-md-9">
+                            <span><B>Sensei Shoshin Nagamine - Hanshi, 10th Dan </B></span><br />
+                            <!--<span><u>Born      : </u> 15 July 1907 Naha, Okinawa </span><br />
+                            <span><u>Died      : </u> 2 November 1997 (aged 90) Naha, Okinawa </span><br />
+                            <span><u>Style     : </u> Matsubayashi-ryu</span><br />
+                            <span><u>Teacher(s): </u> Taro Shimabuku, Ankichi Arakaki, Chotoku Kyan, Motobu Choki</span><br />
+                            <span><u>Rank      : </u> Hanshi, 10th Dan[1]</span><br />
+                            <span><u>Notable students      : </u>Chokei Kishaba, Takayoshi Nagamine, Katsuhiko Shinzato, Ansei Ueshiro, J. Eduardo Castro</span><br />-->
+                            <p>
+                                On 15 July 1907, I was born in Tomari-son, Naha City, of my father, Shoho and my mother Gozei. Though my physique was rather small, I was active and aggressive as any other healthy boys in my preschool days. Completing the compulsory education of primary school in March 1923, I entered Naha City-run 5-year Commercial School. However, when I was second-year student of the school, I suffered from a gastroenteric disorder and given a medication for some time. But, because of inefficacy of the medication, I had to resort to a diet, while practicing Karate at the backyard of neighbor friend, Mr. Chojin Kuba. It was in 1926 and I was 17 years of age. Though the hard work both at school and training of Karate, I succeeded in recovering from illness, making me quite confident of good health. When I reached the senior year, I had a chance to participate, as a leader of Karate Club, in an annual martial arts of Kendo and Karate among various schools. In those days, I began, earnestly, work out every night at the ground of Tomari Primary School, under the guidance of old master, Mr. Kotatsu Iha.
+                            </p>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="box">
+                            <div class="col-lg-12">
+                                <hr>
+                            </div>
+                            <div class="col-md-9">
+                                <b>Sensei Shima Masao - Hanshi, 10th Dan</b><br />
+                                <!--<p>Sensei Ota is the highest ranking Matsubayashi Shorin Ryu practitioner outside of Okinawa.</p>
+                                <p>Sensei Ota started his training in Matsubayashi Shorin Ryu in high school with a close friend of his, he was invited by his friend to train at his school under Sensei Shima Masao and trained at the hombu dojo on weekends under O'Sensei Nagamine.</p>
+                                <p>Sensei Shima was one of the most important students of O’Sensei Nagamine. Sensei Ota was known to train 365 days a year, often three times a day, it did not matter what the weather was like he never stoped training.</p>-->
+                                <p>
+                                    Shima Masao studied Matsubayashi Shorin Ryu under Shoshin Nagamine. Shima Sensei was one of his most important students of Sensei Nagamine. Shima Sensei always held a close relationship with Sensei Nagamine and the Hombu dojo.
+                                    Shoshin Nagamine did not permit sparing at the Hombu Dojo, this caused several of Sensei Nagamine top students to make arrangements to start a new school. Shima Sensei founded a Dojo together with Kishaba & Taba Sensei. This was in the fifties, shortly after their Dan graduations. Shima Sensei did not charge anyone to practice at his new dojo, but due to lack of water the students support the school by bringing water, if you have ever been to Okinawa during summer time you would learn quickly how hot and humid it is and water is of great importance during training in the evening since day time training is not recommended.
+                                    Shima Sensei’s dojo had no more than ten or more students, when visiting Okinawa, Sensei Shima and his students had a yearly celebration and saw one another, the number of students that showed up each year were no more than a dozen.
+                                </p>
+                            </div>
+                            <div class="col-md-3">
+                                <img style="width:250px;height:300px;" src="./Content/images/about/masaoshima.png" />
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="box">
+                            <div class="col-lg-12">
+                                <hr>
+
+
+                            </div>
+                            <div class="col-md-3">
+                                <img style="width:250px;height:300px;" src="./Content/images/about/Eihachiota.jpg" />
+                            </div>
+                            <div class="col-md-9">
+                                <b>Sensei Eihachi Ota - Hanshi 10th Dan</b><br />
+                                <p>Sensei Ota is an expert in empty handed Karate as well as all the traditional Okinawan weapons of self-defense, which at one time were used in the fishing and farming industries: Nunchucks, Bo, Sai, Tonfa and Kama. Ota believes that Kobudo, the study of weapons, is an integral part of karate training, and he encourages students to practice the various weapons. Ota says that weapons training presents an opportunity for students from different styles to train together because the techniques needed for weapons are the same, regardless of stylistic variations or a student’s background. Always however, the student must first learn how to take care of the weapons, because in this way they develop respect and appreciation for the weapons, and, moreover, the responsibility and control to use it. Perhaps even more than his lightning speed or the forcefulness of his techniques, what differentiates Ota from all other sensei is his mastery of distance. Ota explains that when opponents engage, they are already at a very short distance from one another.</p>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="box">
+                            <div class="col-lg-12">
+                                <hr>
+                            </div>
+                            <div class="col-md-9">
+                                <b>Sensei M.Ravi -  7th Dan Black Belt</b><br />
+                                <p>Shōrin-ryū is generally characterized by natural breathing, natural (narrow, high) stances, and circular, rather than direct movements. Shōrin-ryū practitioners assert that correct motion, moving quickly to evade violence with fluid movements and flexible positions are important, and that a solid structure is vital for powerful blocks and strikes. Stances that are too deep generally make body movement difficult. Another feature in this system is how the student is taught to punch. Generally, there is neither a horizontal nor vertical punch in Shōrin-ryū. Punches are slightly canted to the inside, with the largest knuckle of the fore finger (third from the tip) in vertical alignment with the second knuckle of the pinky finger. It is believed that this position is key in lining up the bones of the arm and creates a faster, more stable and powerful strike.</p>
+                            </div>
+                            <div class="col-md-3">
+                                <img style="width:250px;height:300px;" src="./Content/images/about/Mravi.jpg" />
+
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="box">
+                            <div class="col-lg-12">
+                                <hr>
+
+                            </div>
+                            <div class="col-md-3">
+                                <img style="width:250px;height:300px;" src="./Content/images/about/Ssenthil.png" />
+                            </div>
+                            <div class="col-md-9">
+                                <b>Sensei G.Senthil -  4th Dan Black Belt</b><br />
+                                <p>Shōrin-ryū is generally characterized by natural breathing, natural (narrow, high) stances, and circular, rather than direct movements. Shōrin-ryū practitioners assert that correct motion, moving quickly to evade violence with fluid movements and flexible positions are important, and that a solid structure is vital for powerful blocks and strikes. Stances that are too deep generally make body movement difficult. Another feature in this system is how the student is taught to punch. Generally, there is neither a horizontal nor vertical punch in Shōrin-ryū. Punches are slightly canted to the inside, with the largest knuckle of the fore finger (third from the tip) in vertical alignment with the second knuckle of the pinky finger. It is believed that this position is key in lining up the bones of the arm and creates a faster, more stable and powerful strike.</p>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+
+        <section id="services" style="background-color:lightgray">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h2 class="section-heading underline">Services</h2>
+                        <h3 class="section-subheading text-muted ">We serve different styles of karate.</h3>
+                    </div>
+                </div>
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <span class="fa-stack fa-4x">
+                            <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fa fa-shopping-cart fa-stack-1x fa-inverse"></i>
+                            <img src="./Content/images/service/1.JPG" style="width:100%;max-width:490px;height:100%;max-height:245px;" class="img-responsive">
+                        </span>
+                        <h4 class="service-heading">Arnis</h4>
+                        <p class="text-muted">The three are roughly interchangeable umbrella terms for the traditional martial that emphasize weapon-based fighting with sticks, knives, bladed weapons, various improvised weapons as well as "open hand" or techniques without weapons.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="fa-stack fa-4x">
+                            <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fa fa-laptop fa-stack-1x fa-inverse"></i>
+                            <img src="./Content/images/service/2.PNG" style="width:100%;max-width:490px;height:100%;max-height:245px;" class="img-responsive">
+                        </span>
+                        <h4 class="service-heading">Hapkido</h4>
+                        <p class="text-muted">It is a form of self-defense that employs joint locks, grappling, and throwing techniques similar to those of other martial arts, as well as kicks, punches, and other striking attacks.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="fa-stack fa-4x">
+                            <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                            <img src="./Content/images/service/3.JPG" style="width:100%;max-width:490px;height:100%;max-height:245px;" class="img-responsive">
+                        </span>
+                        <h4 class="service-heading">Fencing</h4>
+                        <p class="text-muted">Based on the traditional skills of swordsmanship, the modern sport arose at the end of the 19th century, with the Italian school having modified the historical European martial art of classical fencing.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="Photos">
+            <div class="container">
+                <div>
+                    <div>
+                        <table id="tblSaree" style="margin-top: 7px;" class="table  table-hover data-table myTable">
+                            <thead>
+                                <tr>
+                                    <!--<td>Details</td>
+                                    <td>Details</td>
+                                    <td>Details</td>
+                                    <td>Details</td>-->
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="item in ItemsByPage[currentPage] | orderBy:columnToOrder:reverse">
+                                    <td class="letter-box" ng-repeat="itm in item">
+                                        <img src="{{itm.ProductPictureUrl}}" alt="" data-ng-click="showAdvanced($event)" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+
+                            </tfoot>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        <section class="no-padding" id="videos" style="min-height:750px;background-color:aqua">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h3 class="section-subheading text-muted "></h3>
+                    </div>
+                </div>
+                <div class="row no-gutter popup-gallery">
+                    <div class="col-lg-4 col-sm-6">
+                        <img src="./Content/images/video/1.JPG" style="width:100%;max-width:490px;height:100%;max-height:245px;" class="img-responsive" data-toggle="modal" data-target="#videoModal1" alt="">
+                    </div>
+                    <div class="modal fade" id="videoModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title" id="myModalLabel">Senthil videos</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <iframe width="560" height="315" src="https://www.youtube.com/embed/Z1riSAUlpxY" frameborder="0" allowfullscreen></iframe>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+
+                    <div class="col-lg-4 col-sm-6">
+                        <img src="./Content/images/video/2.JPG" style="width:100%;max-width:490px;height:100%;max-height:245px;" class="img-responsive" data-toggle="modal" data-target="#videoModal2" alt="">
+                    </div>
+                    <div class="modal fade" id="videoModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title" id="myModalLabel">Senthil videos</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <iframe width="560" height="315" src="https://www.youtube.com/embed/Z1riSAUlpxY" frameborder="0" allowfullscreen></iframe>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+
+                    <div class="col-lg-4 col-sm-6">
+                        <img src="./Content/images/video/3.JPG" style="width:100%;max-width:490px;height:100%;max-height:245px;" class="img-responsive" data-toggle="modal" data-target="#videoModal2" alt="">
+                    </div>
+                    <div class="modal fade" id="videoModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title" id="myModalLabel">Manikandaraja videos</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <iframe width="560" height="315" src="https://www.youtube.com/embed/Z1riSAUlpxY" frameborder="0" allowfullscreen></iframe>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+
+                    <div class="col-lg-4 col-sm-6">
+                        <img src="./Content/images/video/4.JPG" style="width:100%;max-width:490px;height:100%;max-height:245px;" class="img-responsive" data-toggle="modal" data-target="#videoModal2" alt="">
+                    </div>
+                    <div class="modal fade" id="videoModal4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title" id="myModalLabel">Manikandanraja videos</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <iframe width="560" height="315" src="https://www.youtube.com/embed/Z1riSAUlpxY" frameborder="0" allowfullscreen></iframe>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+
+                    <div class="col-lg-4 col-sm-6">
+                        <img src="./Content/images/video/5.JPG" style="width:100%;max-width:490px;height:100%;max-height:245px;" class="img-responsive" data-toggle="modal" data-target="#videoModal2" alt="">
+                    </div>
+                    <div class="modal fade" id="videoModal5" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title" id="myModalLabel">Senthil videos</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <iframe width="560" height="315" src="https://www.youtube.com/embed/Z1riSAUlpxY" frameborder="0" allowfullscreen></iframe>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+
+                    <div class="col-lg-4 col-sm-6">
+                        <img src="./Content/images/video/6.JPG" style="width:100%;max-width:490px;height:100%;max-height:245px;" class="img-responsive" data-toggle="modal" data-target="#videoModal2" alt="">
+                    </div>
+                    <div class="modal fade" id="videoModal6" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title" id="myModalLabel">Senthil videos</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <iframe width="560" height="315" src="https://www.youtube.com/embed/Z1riSAUlpxY" frameborder="0" allowfullscreen></iframe>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+        <script type="text/ng-template" id="dialog1.tmpl.html">
+            <md-dialog aria-label="Shorinryu-Tamilnadu">
+                <form ng-cloak>
+                    <md-toolbar>
+                        <div class="md-toolbar-tools">
+                            <h2>Shorinryu-Tamilnadu</h2>
+                            <span flex></span>
+                            <md-button class="md-icon-button" ng-click="cancel()">
+                                <md-icon md-svg-src="./Content/images/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+                            </md-button>
+                        </div>
+                    </md-toolbar>
+
+                    <md-dialog-content>
+                        <div class="md-dialog-content">
+
+                            <table id="tblSareesingle" class="table  table-hover data-table">
+                                <thead>
+                                    <tr></tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr ng-repeat="item in ItemsByPage[currentPage]">
+                                        <td class="letter-box-inner" ng-repeat="itm in item">
+                                            <img src="{{itm.ProductPictureUrl}}" alt="" style="height:235px !important" data-ng-click="showAdvanced($event)" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </md-dialog-content>
+
+                    <md-dialog-actions layout="row">
+                        <md-button target="_blank" md-autofocus>
+                            <ul class="pagination" style="float:right !important">
+                                <li ng-class="{active:0}">
+                                    <a href="#" ng-click="previousPage()">Pre</a>
+
+                                </li>
+                                <li ng-class="{active:0}">
+                                    <a href="#" ng-click="firstPage()">First</a>
+
+                                </li>
+                                <li ng-repeat="n in range(ItemsByPage.length)">
+                                    <a href="#" ng-click="setPage()" ng-bind="n+1">1</a>
+
+                                </li>
+                                <li>
+                                    <a href="#" ng-click="lastPage()">Last</a>
+
+                                </li>
+                                <li ng-class="{active:0}">
+                                    <a href="#" ng-click="nextPage()">Next</a>
+
+                                </li>
+                            </ul>
+                        </md-button>
+                        <span flex></span>
+                        <md-button style="background-color:lightgreen" target="_blank" md-autofocus ng-click="answer('not useful')">
+                            Okay
+                        </md-button>
+                        <!--<md-button ng-click="answer('useful')">
+                            Useful
+                        </md-button>-->
+                    </md-dialog-actions>
+                </form>
+            </md-dialog>
+        </script>
+
+        <section id="contact" class="no-padding" style="background-color:thistle">
+            <div class="container">
+                <div>
+                    <h4 style="visibility:hidden"><strong>Contact Us</strong></h4>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <h4 style="color:red"><strong>Get in Touch</strong></h4>
+                        <h5>S.Senthil</h5>
+                        <h5>1064, South car street</h5>
+                        <h5>Coimbatore</h5>
+                        <h5>Contact number</h5>
+                        <h5>Mobile : 98423 34868</h5>
+                        <h5>Email</h5>
+                        <h5>Address</h5>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d3736489.7218514383!2d90.21589792292741!3d23.857125486636733!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sbd!4v1506502314230" width="100%" height="275" frameborder="0" style="border:0" allowfullscreen></iframe>
+                    </div>
+                    <div class="col-md-5">
+                        <h4><strong>Get in Touch</strong></h4>
+                        <form>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="" value="" placeholder="Name">
+                            </div>
+                            <div class="form-group">
+                                <input type="email" class="form-control" name="" value="" placeholder="E-mail">
+                            </div>
+                            <div class="form-group">
+                                <input type="tel" class="form-control" name="" value="" placeholder="Phone">
+                            </div>
+                            <div class="form-group">
+                                <input type="tel" class="form-control" name="" value="" placeholder="Phone">
+                            </div>
+                            <div class="form-group">
+                                <input type="tel" class="form-control" name="" value="" placeholder="Phone">
+                            </div>
+
+                            <button class="btn btn-default" type="submit" name="button">
+                                <i class="fa fa-paper-plane-o" aria-hidden="true"></i> Submit
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>
+
+
+    <!--<script type="text/javascript" src="./js/agency.js"></script>-->
+    <script type="text/javascript">
+        $("html, body").stop().animate({
+            scrollTop: 50
+        });
+        // jQuery for page scrolling feature - requires jQuery Easing plugin
+        $('a.page-scroll').bind('click', function (event) {
+            var $anchor = $(this);
+            $('html, body').stop().animate({
+                scrollTop: ($($anchor.attr('href')).offset().top - 50)
+            }, 1250, 'easeInOutExpo');
+            event.preventDefault();
+        });
+
+        // Highlight the top nav as scrolling occurs
+        $('body').scrollspy({
+            target: '.navbar-fixed-top',
+            offset: 51
+        });
+
+        // Closes the Responsive Menu on Menu Item Click
+        $('.navbar-collapse ul li a').click(function () {
+            $('.navbar-toggle:visible').click();
+        });
+
+        // Offset for Main Navigation
+        $('#mainNav').affix({
+            offset: {
+                top: 100
+            }
+        })
+    </script>
+
+</body>
+
+</html>
